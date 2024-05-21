@@ -3,7 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'dart:io';
-import 'category_items_page.dart';
+
+import '../category_items_page.dart';
 
 class InventoryPage extends StatefulWidget {
   const InventoryPage({Key? key}) : super(key: key);
