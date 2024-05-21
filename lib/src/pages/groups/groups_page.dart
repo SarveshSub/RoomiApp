@@ -53,7 +53,7 @@ class _GroupsPageState extends State<GroupsPage> {
               onPressed: () async {
                 final authProvider = Provider.of<AuthProvider>(context, listen: false);
                 if (groupNameController.text.isNotEmpty && authProvider.user != null) {
-                  await _groupService.addOrUpdateGroup(groupNameController.text, authProvider.userEmail!);
+                  await _groupService.addOrUpdateGroup(groupNameController.text, authProvider.userName!);
                   Navigator.of(context).pop();
                   _loadGroups();
                 }

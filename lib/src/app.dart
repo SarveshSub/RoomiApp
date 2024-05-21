@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(),
           darkTheme: ThemeData.dark(),
           themeMode: settingsController.themeMode,
-          home: const LoginPage(), // Set the home screen as the home screen
+          home: const SignupPage(), // Set the home screen as the home screen
         );
       },
     );

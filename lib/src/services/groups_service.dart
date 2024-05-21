@@ -4,20 +4,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 class GroupService {
   final FirebaseDatabase _database = FirebaseDatabase.instance;
 
-  Future<void> addOrUpdateGroup(String groupName, String user) async {
+  Future<void> addOrUpdateGroup(String groupName, String userName) async {
     final ref = _database.ref('Groups/$groupName');
     final snapshot = await ref.get();
 
     if (snapshot.exists) {
       List<String> users = List<String>.from(snapshot.child('users').value as List);
-      if (!users.contains(user)) {
-        users.add(user);
+      if (!users.contains(userName)) {
+        users.add(userName);
         await ref.update({'users': users});
       }
     } else {
       await ref.set({
         'name': groupName,
-        'users': [user],
+        'users': [userName],
       });
     }
   }
