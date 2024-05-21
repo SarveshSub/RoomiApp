@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'payments_logic.dart';
+import '../../services/payments_service.dart';
 
 class PaymentsPage extends StatefulWidget {
   const PaymentsPage({Key? key}) : super(key: key);
