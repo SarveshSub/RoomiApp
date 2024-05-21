@@ -51,14 +51,9 @@ class _GroupsPageState extends State<GroupsPage> {
             TextButton(
               child: const Text('Add'),
               onPressed: () async {
-                print("Trying to add group!");
-                final authProvider =
-                    Provider.of<AuthProvider>(context, listen: false);
-                if (groupNameController.text.isNotEmpty &&
-                    authProvider.user != null) {
-                  print("User: ${authProvider.user!.email}");
-                  await _groupService.addOrUpdateGroup(
-                      groupNameController.text, authProvider.user!);
+                final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                if (groupNameController.text.isNotEmpty && authProvider.user != null) {
+                  await _groupService.addOrUpdateGroup(groupNameController.text, authProvider.userName!);
                   Navigator.of(context).pop();
                   _loadGroups();
                 }

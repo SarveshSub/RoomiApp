@@ -5,16 +5,17 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../home_page.dart'; // Assuming HomePage is defined
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class SignupPage extends StatefulWidget {
+  const SignupPage({Key? key}) : super(key: key);
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _SignupPageState createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignupPageState extends State<SignupPage> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   File? _profileImage;
 
@@ -34,8 +35,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _submit() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    if (_profileImage == null ||
-        _firstNameController.text.isEmpty ||
+    if (_firstNameController.text.isEmpty ||
         _lastNameController.text.isEmpty ||
         _emailController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -46,12 +46,13 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       await authProvider.signInAnonymously();
-      final profilePictureUrl = await authProvider.uploadProfilePicture(_profileImage!);
+      // final profilePictureUrl = await authProvider.uploadProfilePicture(_profileImage!);
       await authProvider.addUser(
         _firstNameController.text,
         _lastNameController.text,
+        _usernameController.text,
         _emailController.text,
-        profilePictureUrl,
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png",
       );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User added successfully.')),
@@ -95,6 +96,10 @@ class _LoginPageState extends State<LoginPage> {
             TextField(
               controller: _lastNameController,
               decoration: const InputDecoration(labelText: 'Last Name'),
+            ),
+            TextField(
+              controller: _usernameController,
+              decoration: const InputDecoration(labelText: 'Username'),
             ),
             TextField(
               controller: _emailController,
