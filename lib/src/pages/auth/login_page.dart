@@ -34,8 +34,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _submit() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    if (_profileImage == null ||
-        _firstNameController.text.isEmpty ||
+    if (_firstNameController.text.isEmpty ||
         _lastNameController.text.isEmpty ||
         _emailController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -46,12 +45,12 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       await authProvider.signInAnonymously();
-      final profilePictureUrl = await authProvider.uploadProfilePicture(_profileImage!);
+      // final profilePictureUrl = await authProvider.uploadProfilePicture(_profileImage!);
       await authProvider.addUser(
         _firstNameController.text,
         _lastNameController.text,
         _emailController.text,
-        profilePictureUrl,
+        "bs",
       );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User added successfully.')),

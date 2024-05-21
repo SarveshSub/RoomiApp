@@ -12,6 +12,8 @@ class AuthProvider with ChangeNotifier {
   
   User? _user;
   User? get user => _user;
+
+  String userEmail = '';
   
   Future<void> signInAnonymously() async {
     UserCredential userCredential = await _auth.signInAnonymously();
@@ -40,6 +42,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> addUser(String firstName, String lastName, String email, String profilePictureUrl) async {
+    userEmail = email;
     await _database.ref('Users/${_user!.uid}').set({
       'firstName': firstName,
       'lastName': lastName,
