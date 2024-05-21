@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1000436143279",
+    "project_id": "roomi-app",
+    "storage_bucket": "roomi-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000436143279:android:3a1c4f9549f0dc8fd3b05a",
+        "android_client_info": {
+          "package_name": "com.hackthecl.roomi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoSnYV4_I14cjlVNoFtvR8OSPmRiNeauc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
