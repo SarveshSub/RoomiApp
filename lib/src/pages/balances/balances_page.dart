@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../services/payments_service.dart';
+import '../../services/balances_service.dart';
 
-class PaymentsPage extends StatefulWidget {
-  const PaymentsPage({Key? key}) : super(key: key);
+class BalancesPage extends StatefulWidget {
+  const BalancesPage({super.key});
 
   @override
-  _PaymentsPageState createState() => _PaymentsPageState();
+  _BalancesPageState createState() => _BalancesPageState();
 }
 
-class _PaymentsPageState extends State<PaymentsPage> {
+class _BalancesPageState extends State<BalancesPage> {
   late PaymentsLogic paymentsLogic;
   User currentUser = User('User 1');
 
@@ -25,11 +25,11 @@ class _PaymentsPageState extends State<PaymentsPage> {
 
   @override
   Widget build(BuildContext context) {
-    double totalDebt = paymentsLogic.getTotalDebtForUser(currentUser);
+    double totalBalance = paymentsLogic.getTotalBalanceForUser(currentUser);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Payments'),
+        title: const Text('Balances'),
         centerTitle: true,
         elevation: 0,
       ),
@@ -41,16 +41,16 @@ class _PaymentsPageState extends State<PaymentsPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Total Debt',
-                  style: TextStyle(
+                Text(
+                  totalBalance >= 0 ? 'You are owed:' : 'You owe:',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  '\$${totalDebt.toStringAsFixed(2)}',
+                  '\$${totalBalance.abs().toStringAsFixed(2)}',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -65,7 +65,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
               itemCount: paymentsLogic.groups.length,
               itemBuilder: (context, index) {
                 Group group = paymentsLogic.groups[index];
-                double debtOwed = paymentsLogic.getDebtOwedToUser(currentUser, group);
+                double balance = paymentsLogic.getBalanceForGroup(currentUser, group);
                 return Card(
                   elevation: 2,
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -80,11 +80,11 @@ class _PaymentsPageState extends State<PaymentsPage> {
                       ),
                     ),
                     subtitle: Text(
-                      debtOwed <= 0
-                          ? 'You are owed: \$${(-debtOwed).toStringAsFixed(2)}'
-                          : 'You owe: \$${debtOwed.toStringAsFixed(2)}',
+                      balance >= 0
+                          ? 'You are owed: \$${balance.toStringAsFixed(2)}'
+                          : 'You owe: \$${(-balance).toStringAsFixed(2)}',
                       style: TextStyle(
-                        color: debtOwed <= 0 ? Colors.green : Colors.red,
+                        color: balance >= 0 ? Colors.green : Colors.red,
                       ),
                     ),
                     trailing: const Icon(Icons.arrow_forward),
@@ -128,8 +128,7 @@ class GroupDetailsPage extends StatelessWidget {
   final Group group;
   final PaymentsLogic paymentsLogic;
 
-  const GroupDetailsPage({Key? key, required this.group, required this.paymentsLogic})
-      : super(key: key);
+  const GroupDetailsPage({super.key, required this.group, required this.paymentsLogic});
 
   @override
   Widget build(BuildContext context) {
@@ -191,8 +190,7 @@ class AddPaymentPage extends StatefulWidget {
   final List<Group> groups;
   final PaymentsLogic paymentsLogic;
 
-  const AddPaymentPage({Key? key, required this.groups, required this.paymentsLogic})
-      : super(key: key);
+  const AddPaymentPage({super.key, required this.groups, required this.paymentsLogic});
 
   @override
   _AddPaymentPageState createState() => _AddPaymentPageState();
@@ -201,11 +199,8 @@ class AddPaymentPage extends StatefulWidget {
 class _AddPaymentPageState extends State<AddPaymentPage> {
   Group? selectedGroup;
   List<User> selectedDebtors = [];
-  User? selectedCreditor;
   double amount = 0.0;
   String description = '';
-  PaymentSplitMethod splitMethod = PaymentSplitMethod.even;
-  Map<User, double> customSplit = {};
 
   @override
   void initState() {
@@ -216,24 +211,6 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
   void _selectDebtors(List<User> debtors) {
     setState(() {
       selectedDebtors = debtors;
-    });
-  }
-
-  void _selectCreditor(User creditor) {
-    setState(() {
-      selectedCreditor = creditor;
-    });
-  }
-
-  void _setSplitMethod(PaymentSplitMethod method) {
-    setState(() {
-      splitMethod = method;
-    });
-  }
-
-  void _setCustomSplit(Map<User, double> split) {
-    setState(() {
-      customSplit = split;
     });
   }
 
@@ -256,7 +233,6 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                   setState(() {
                     selectedGroup = newValue;
                     selectedDebtors.clear();
-                    selectedCreditor = null;
                   });
                 },
                 items: widget.groups.map((Group group) {
@@ -288,24 +264,6 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
               const SizedBox(height: 8),
               Text('Selected Debtors: ${selectedDebtors.map((e) => e.name).join(", ")}'),
               const SizedBox(height: 16),
-              // Creditor Selection
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CreditorSelectionPage(
-                        group: selectedGroup!,
-                        onCreditorSelected: _selectCreditor,
-                      ),
-                    ),
-                  );
-                },
-                child: const Text('Select Creditor'),
-              ),
-              const SizedBox(height: 8),
-              Text('Selected Creditor: ${selectedCreditor?.name ?? ""}'),
-              const SizedBox(height: 16),
               // Amount Input
               TextFormField(
                 keyboardType: TextInputType.number,
@@ -331,61 +289,18 @@ class _AddPaymentPageState extends State<AddPaymentPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Split Method Selection
-              ListTile(
-                title: const Text('Split Evenly'),
-                leading: Radio<PaymentSplitMethod>(
-                  value: PaymentSplitMethod.even,
-                  groupValue: splitMethod,
-                  onChanged: (PaymentSplitMethod? value) {
-                    _setSplitMethod(value!);
-                  },
-                ),
-              ),
-              ListTile(
-                title: const Text('Custom Split'),
-                leading: Radio<PaymentSplitMethod>(
-                  value: PaymentSplitMethod.custom,
-                  groupValue: splitMethod,
-                  onChanged: (PaymentSplitMethod? value) {
-                    _setSplitMethod(value!);
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Custom Split
-              if (splitMethod == PaymentSplitMethod.custom)
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CustomSplitPage(
-                          debtors: selectedDebtors,
-                          totalAmount: amount,
-                          onCustomSplitSet: _setCustomSplit,
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Text('Set Custom Split'),
-                ),
-              const SizedBox(height: 16),
               // Add Payment Button
               ElevatedButton(
                 onPressed: () {
                   if (selectedGroup != null &&
                       selectedDebtors.isNotEmpty &&
-                      selectedCreditor != null &&
                       amount > 0) {
                     widget.paymentsLogic.createDebt(
                       selectedGroup!,
-                      selectedCreditor!,
+                      widget.paymentsLogic.currentUser,
                       selectedDebtors,
                       amount,
                       description,
-                      splitMethod,
-                      customSplit: customSplit,
                     );
                     Navigator.pop(context);
                   }
@@ -405,10 +320,10 @@ class DebtorSelectionPage extends StatefulWidget {
   final Function(List<User>) onDebtorsSelected;
 
   const DebtorSelectionPage({
-    Key? key,
+    super.key,
     required this.group,
     required this.onDebtorsSelected,
-  }) : super(key: key);
+  });
 
   @override
   _DebtorSelectionPageState createState() => _DebtorSelectionPageState();
@@ -446,142 +361,6 @@ class _DebtorSelectionPageState extends State<DebtorSelectionPage> {
         onPressed: () {
           widget.onDebtorsSelected(selectedDebtors);
           Navigator.pop(context);
-        },
-        child: const Icon(Icons.check),
-      ),
-    );
-  }
-}
-
-class CreditorSelectionPage extends StatefulWidget {
-  final Group group;
-  final Function(User) onCreditorSelected;
-
-  const CreditorSelectionPage({
-    Key? key,
-    required this.group,
-    required this.onCreditorSelected,
-  }) : super(key: key);
-
-  @override
-  _CreditorSelectionPageState createState() => _CreditorSelectionPageState();
-}
-
-class _CreditorSelectionPageState extends State<CreditorSelectionPage> {
-  User? selectedCreditor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Select Creditor'),
-      ),
-      body: ListView.builder(
-        itemCount: widget.group.members.length,
-        itemBuilder: (context, index) {
-          User member = widget.group.members[index];
-          return RadioListTile<User>(
-            title: Text(member.name),
-            value: member,
-            groupValue: selectedCreditor,
-            onChanged: (User? value) {
-              setState(() {
-                selectedCreditor = value;
-              });
-            },
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (selectedCreditor != null) {
-            widget.onCreditorSelected(selectedCreditor!);
-            Navigator.pop(context);
-          }
-        },
-        child: const Icon(Icons.check),
-      ),
-    );
-  }
-}
-class CustomSplitPage extends StatefulWidget {
-  final List<User> debtors;
-  final double totalAmount;
-  final Function(Map<User, double>) onCustomSplitSet;
-
-  const CustomSplitPage({
-    Key? key,
-    required this.debtors,
-    required this.totalAmount,
-    required this.onCustomSplitSet,
-  }) : super(key: key);
-
-  @override
-  _CustomSplitPageState createState() => _CustomSplitPageState();
-}
-
-class _CustomSplitPageState extends State<CustomSplitPage> {
-  Map<User, double> customSplit = {};
-
-  @override
-  void initState() {
-    super.initState();
-    for (User debtor in widget.debtors) {
-      customSplit[debtor] = 0.0;
-    }
-  }
-
-  void _setCustomAmount(User debtor, String value) {
-    setState(() {
-      customSplit[debtor] = double.tryParse(value) ?? 0.0;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Custom Split'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: widget.debtors.length,
-              itemBuilder: (context, index) {
-                User debtor = widget.debtors[index];
-                return ListTile(
-                  title: Text(debtor.name),
-                  subtitle: TextFormField(
-                    keyboardType: TextInputType.number,
-                    initialValue: customSplit[debtor]!.toStringAsFixed(2),
-                    onChanged: (value) => _setCustomAmount(debtor, value),
-                  ),
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Total: \$${customSplit.values.fold(0.0, (a, b) => a + b).toStringAsFixed(2)}',
-              style: const TextStyle(fontSize: 18.0),
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (customSplit.values.fold(0.0, (a, b) => a + b) == widget.totalAmount) {
-            widget.onCustomSplitSet(customSplit);
-            Navigator.pop(context);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Custom split amounts must add up to the total amount.'),
-              ),
-            );
-          }
         },
         child: const Icon(Icons.check),
       ),
