@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../services/firebase_service.dart';
 import '../home_page.dart'; // Assuming HomePage is defined
 
 class SignupPage extends StatefulWidget {
@@ -20,6 +21,7 @@ class _SignupPageState extends State<SignupPage> {
   File? _profileImage;
 
   final ImagePicker _picker = ImagePicker();
+  final FirebaseService _firebaseService = FirebaseService();
 
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -45,24 +47,36 @@ class _SignupPageState extends State<SignupPage> {
     }
 
     try {
-      await authProvider.signInAnonymously();
-      // final profilePictureUrl = await authProvider.uploadProfilePicture(_profileImage!);
-      await authProvider.addUser(
-        _firstNameController.text,
-        _lastNameController.text,
-        _usernameController.text,
-        _emailController.text,
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png",
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User added successfully.')),
-      );
+      final user = await _firebaseService.signInAnonymously();
+      if (user != null) {
+        // Store username globally
+        authProvider.setUserName(_usernameController.text);
+        
+        // Upload profile picture if available
+        String profilePictureUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png";
+        if (_profileImage != null) {
+          profilePictureUrl = await _firebaseService.uploadProfilePicture(user.uid, _profileImage!);
+        }
 
-      // Navigate to the home page after successful submission
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
+        await _firebaseService.addUser(
+          user.uid,
+          _firstNameController.text,
+          _lastNameController.text,
+          _usernameController.text,
+          _emailController.text,
+          profilePictureUrl,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User added successfully.')),
+        );
+
+        // Navigate to the home page after successful submission
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      }
     } catch (e) {
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(

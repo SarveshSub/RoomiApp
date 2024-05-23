@@ -25,7 +25,8 @@ class _GroupsPageState extends State<GroupsPage> {
 
   Future<void> _loadGroups() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    if (authProvider.user != null) {
+    final userName = authProvider.userName;
+    if (userName.isNotEmpty) {
       final groups = await _groupService.getGroups(widget.userGroups);
       setState(() {
         _groups = groups;
@@ -54,10 +55,8 @@ class _GroupsPageState extends State<GroupsPage> {
             TextButton(
               child: const Text('Create'),
               onPressed: () async {
-                final authProvider =
-                Provider.of<AuthProvider>(context, listen: false);
-                if (groupNameController.text.isNotEmpty &&
-                    authProvider.user != null) {
+                final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                if (groupNameController.text.isNotEmpty && authProvider.userName.isNotEmpty) {
                   await _groupService.addOrUpdateGroup(
                     groupNameController.text,
                     authProvider.userName,
@@ -106,8 +105,7 @@ class _GroupsPageState extends State<GroupsPage> {
             TextButton(
               child: const Text('Leave Group'),
               onPressed: () async {
-                final authProvider =
-                Provider.of<AuthProvider>(context, listen: false);
+                final authProvider = Provider.of<AuthProvider>(context, listen: false);
                 await _groupService.leaveGroup(
                   group['name'],
                   authProvider.userName,

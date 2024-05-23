@@ -10,10 +10,11 @@ class FirebaseService {
   final FirebaseDatabase _database = FirebaseDatabase.instance;
 
   Future<void> addUser(String uid, String firstName, String lastName,
-      String email, String profilePictureUrl) async {
+      String userName, String email, String profilePictureUrl) async {
     await _database.ref('Users/$uid').set({
       'firstName': firstName,
       'lastName': lastName,
+      'userName': userName,
       'email': email,
       'profilePictureUrl': profilePictureUrl,
     });
@@ -34,28 +35,6 @@ class FirebaseService {
     final compressedImage = await _compressImage(profilePicture);
 
     final uploadTask = ref.putFile(compressedImage);
-
-    uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-      switch (snapshot.state) {
-        case TaskState.running:
-          final progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          print("Upload is $progress% complete.");
-          break;
-        case TaskState.paused:
-          print("Upload is paused.");
-          break;
-        case TaskState.success:
-          print("Upload was successful.");
-          break;
-        case TaskState.canceled:
-          print("Upload was canceled.");
-          break;
-        case TaskState.error:
-          print("Upload failed.");
-          break;
-      }
-    });
 
     await uploadTask;
     return await ref.getDownloadURL();
