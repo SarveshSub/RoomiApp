@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/balances_service.dart';
+import '../../widgets/floating_add_button.dart';
 
 class BalancesPage extends StatefulWidget {
   const BalancesPage({super.key});
@@ -28,11 +29,6 @@ class _BalancesPageState extends State<BalancesPage> {
     double totalBalance = paymentsLogic.getTotalBalanceForUser(currentUser);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Balances'),
-        centerTitle: true,
-        elevation: 0,
-      ),
       body: Column(
         children: [
           Container(
@@ -106,7 +102,7 @@ class _BalancesPageState extends State<BalancesPage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingAddButton(
         onPressed: () {
           Navigator.push(
             context,
@@ -118,7 +114,6 @@ class _BalancesPageState extends State<BalancesPage> {
             ),
           );
         },
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -357,12 +352,11 @@ class _DebtorSelectionPageState extends State<DebtorSelectionPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingAddButton(
         onPressed: () {
           widget.onDebtorsSelected(selectedDebtors);
           Navigator.pop(context);
         },
-        child: const Icon(Icons.check),
       ),
     );
   }

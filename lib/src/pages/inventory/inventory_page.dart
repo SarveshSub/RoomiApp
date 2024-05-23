@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:roomi/src/widgets/floating_add_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
@@ -146,25 +147,6 @@ class _InventoryPageState extends State<InventoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Inventory',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        centerTitle: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add, color: Colors.black),
-            onPressed: () => _showAddCategoryDialog(),
-          ),
-        ],
-      ),
       body: Container(
         color: Colors.grey[100],
         child: Column(
@@ -297,6 +279,9 @@ class _InventoryPageState extends State<InventoryPage> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingAddButton(
+        onPressed: () => _showAddCategoryDialog(),
       ),
     );
   }
