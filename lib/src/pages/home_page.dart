@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:roomi/src/pages/balances/balances_page.dart';
 import 'package:roomi/src/pages/groups/groups_page.dart';
 
-import 'payments/payments_page.dart';
 import 'tasks/tasks_page.dart';
 import 'inventory/inventory_page.dart';
 
@@ -17,7 +17,7 @@ class HomePageState extends State<HomePage> {
   final PageController _pageController = PageController();
 
   static const List<Widget> _pages = <Widget>[
-    PaymentsPage(),
+    BalancesPage(),
     TasksPage(),
     InventoryPage(),
   ];
