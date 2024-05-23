@@ -7,7 +7,7 @@ import 'dart:io';
 import '../category_items_page.dart';
 
 class InventoryPage extends StatefulWidget {
-  const InventoryPage({Key? key}) : super(key: key);
+  const InventoryPage({super.key});
 
   @override
   _InventoryPageState createState() => _InventoryPageState();
@@ -73,9 +73,9 @@ class _InventoryPageState extends State<InventoryPage> {
   }
 
   void _showAddCategoryDialog({int? index}) {
-    final TextEditingController _controller = TextEditingController();
+    final TextEditingController controller = TextEditingController();
     if (index != null) {
-      _controller.text = categories[index]['name']!;
+      controller.text = categories[index]['name']!;
     }
 
     showDialog(
@@ -84,7 +84,7 @@ class _InventoryPageState extends State<InventoryPage> {
         return AlertDialog(
           title: Text(index == null ? 'Add Category' : 'Edit Category'),
           content: TextField(
-            controller: _controller,
+            controller: controller,
             decoration: const InputDecoration(hintText: 'Category Name'),
           ),
           actions: [
@@ -107,13 +107,13 @@ class _InventoryPageState extends State<InventoryPage> {
               ),
             TextButton(
               onPressed: () {
-                if (_controller.text.isEmpty) {
+                if (controller.text.isEmpty) {
                   return;
                 }
                 if (index == null) {
-                  _addCategory(_controller.text);
+                  _addCategory(controller.text);
                 } else {
-                  _editCategory(index, _controller.text);
+                  _editCategory(index, controller.text);
                 }
                 Navigator.of(context).pop();
               },
@@ -257,9 +257,9 @@ class _InventoryPageState extends State<InventoryPage> {
                                     Expanded(
                                       flex: 1,
                                       child: Container(
-                                        decoration: BoxDecoration(
+                                        decoration: const BoxDecoration(
                                           color: Colors.white,
-                                          borderRadius: const BorderRadius.vertical(
+                                          borderRadius: BorderRadius.vertical(
                                             bottom: Radius.circular(15),
                                           ),
                                         ),

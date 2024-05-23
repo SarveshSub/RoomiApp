@@ -6,7 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../home_page.dart'; // Assuming HomePage is defined
 
 class SignupPage extends StatefulWidget {
-  const SignupPage({Key? key}) : super(key: key);
+  const SignupPage({super.key});
 
   @override
   _SignupPageState createState() => _SignupPageState();
@@ -61,7 +61,7 @@ class _SignupPageState extends State<SignupPage> {
       // Navigate to the home page after successful submission
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
     } catch (e) {
       print('Error: $e');

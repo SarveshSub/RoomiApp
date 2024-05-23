@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:roomi/src/pages/balances/balances_page.dart';
 import 'package:roomi/src/pages/groups/groups_page.dart';
+import 'package:roomi/src/pages/settings/settings_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'balances/balances_page.dart'; // Updated import
 import 'tasks/tasks_page.dart';
 import 'inventory/inventory_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   HomePageState createState() => HomePageState();
@@ -35,20 +38,47 @@ class HomePageState extends State<HomePage> {
     });
   }
 
+  Future<void> _navigateToGroups() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userGroups = prefs.getStringList('userGroups') ?? [];
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GroupsPage(userGroups: userGroups),
+      ),
+    );
+  }
+
+  void _navigateToSettings() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SettingsPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Roommate Manager'),
+        title: const Text(
+          'Roomi',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+          ),
+        ),
+        centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.group),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const GroupsPage()),
-            );
-          },
+          onPressed: _navigateToGroups,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: _navigateToSettings,
+          ),
+        ],
       ),
       body: PageView(
         controller: _pageController,
@@ -59,7 +89,7 @@ class HomePageState extends State<HomePage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.payment),
-            label: 'Payments',
+            label: 'Balances',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.task),
@@ -71,7 +101,8 @@ class HomePageState extends State<HomePage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
     );
