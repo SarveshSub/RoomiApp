@@ -9,7 +9,9 @@ class GroupService {
     final snapshot = await ref.get();
 
     if (snapshot.exists) {
-      List<String> users = List<String>.from(snapshot.child('users').value as List);
+      List<String> users = List<String>.from(snapshot
+          .child('users')
+          .value as List);
       if (!users.contains(userName)) {
         users.add(userName);
         await ref.update({'users': users});
@@ -22,7 +24,7 @@ class GroupService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getUserGroups(User user) async {
+  Future<List<Map<String, dynamic>>> getGroups(List<String> groupNames) async {
     final ref = _database.ref('Groups');
     final snapshot = await ref.get();
 
@@ -30,13 +32,30 @@ class GroupService {
     if (snapshot.exists) {
       final data = snapshot.value as Map;
       data.forEach((key, value) {
-        List<dynamic> users = value['users'];
-        if (users.contains(user.email)) {
-          groups.add({'name': key, 'users': users});
+        if (groupNames.contains(key)) {
+          groups.add({'name': key, 'users': value['users']});
         }
       });
     }
 
     return groups;
+  }
+
+  Future<void> leaveGroup(String groupName, String userName) async {
+    final ref = _database.ref('Groups/$groupName');
+    final snapshot = await ref.get();
+
+    if (snapshot.exists) {
+      List<String> users = List<String>.from(snapshot
+          .child('users')
+          .value as List);
+      users.remove(userName);
+
+      if (users.isEmpty) {
+        await ref.remove();
+      } else {
+        await ref.update({'users': users});
+      }
+    }
   }
 }

@@ -5,7 +5,7 @@ import 'dart:convert';
 class CategoryItemsPage extends StatefulWidget {
   final String category;
 
-  const CategoryItemsPage({Key? key, required this.category}) : super(key: key);
+  const CategoryItemsPage({super.key, required this.category});
 
   @override
   _CategoryItemsPageState createState() => _CategoryItemsPageState();
@@ -57,7 +57,7 @@ class _CategoryItemsPageState extends State<CategoryItemsPage> {
   }
 
   void _showAddItemDialog() {
-    final TextEditingController _controller = TextEditingController();
+    final TextEditingController controller = TextEditingController();
 
     showDialog(
       context: context,
@@ -65,7 +65,7 @@ class _CategoryItemsPageState extends State<CategoryItemsPage> {
         return AlertDialog(
           title: const Text('Add Item'),
           content: TextField(
-            controller: _controller,
+            controller: controller,
             decoration: const InputDecoration(hintText: 'Item Name'),
           ),
           actions: [
@@ -77,7 +77,7 @@ class _CategoryItemsPageState extends State<CategoryItemsPage> {
             ),
             TextButton(
               onPressed: () {
-                _addItem(_controller.text);
+                _addItem(controller.text);
                 Navigator.of(context).pop();
               },
               child: const Text('Add'),
@@ -89,10 +89,10 @@ class _CategoryItemsPageState extends State<CategoryItemsPage> {
   }
 
   void _showEditItemDialog(int index) {
-    final TextEditingController _nameController = TextEditingController(text: items[index]['name']);
-    final TextEditingController _quantityController =
+    final TextEditingController nameController = TextEditingController(text: items[index]['name']);
+    final TextEditingController quantityController =
         TextEditingController(text: items[index]['quantity'].toString());
-    final TextEditingController _noteController = TextEditingController(text: items[index]['note']);
+    final TextEditingController noteController = TextEditingController(text: items[index]['note']);
 
     showDialog(
       context: context,
@@ -103,16 +103,16 @@ class _CategoryItemsPageState extends State<CategoryItemsPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: _nameController,
+                controller: nameController,
                 decoration: const InputDecoration(hintText: 'Item Name'),
               ),
               TextField(
-                controller: _quantityController,
+                controller: quantityController,
                 decoration: const InputDecoration(hintText: 'Quantity'),
                 keyboardType: TextInputType.number,
               ),
               TextField(
-                controller: _noteController,
+                controller: noteController,
                 decoration: const InputDecoration(hintText: 'Note'),
               ),
             ],
@@ -128,9 +128,9 @@ class _CategoryItemsPageState extends State<CategoryItemsPage> {
               onPressed: () {
                 _editItem(
                   index,
-                  _nameController.text,
-                  int.tryParse(_quantityController.text) ?? items[index]['quantity'],
-                  _noteController.text,
+                  nameController.text,
+                  int.tryParse(quantityController.text) ?? items[index]['quantity'],
+                  noteController.text,
                 );
                 Navigator.of(context).pop();
               },

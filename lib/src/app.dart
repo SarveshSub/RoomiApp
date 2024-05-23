@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:roomi/src/pages/auth/login_page.dart';
-import 'package:roomi/src/pages/home_page.dart';
 import 'providers/settings_provider.dart';
 
 class MyApp extends StatelessWidget {
