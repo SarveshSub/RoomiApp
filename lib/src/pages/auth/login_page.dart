@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
+import '../../providers/account_provider.dart';
 import '../../services/firebase_service.dart';
 import '../home_page.dart'; // Assuming HomePage is defined
 
@@ -35,13 +35,15 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   Future<void> _submit() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final authProvider = Provider.of<AccountProvider>(context, listen: false);
 
     if (_firstNameController.text.isEmpty ||
         _lastNameController.text.isEmpty ||
         _emailController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please complete all fields and select a profile picture.')),
+        const SnackBar(
+            content: Text(
+                'Please complete all fields and select a profile picture.')),
       );
       return;
     }
@@ -51,11 +53,13 @@ class _SignupPageState extends State<SignupPage> {
       if (user != null) {
         // Store username globally
         authProvider.setUserName(_usernameController.text);
-        
+
         // Upload profile picture if available
-        String profilePictureUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png";
+        String profilePictureUrl =
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png";
         if (_profileImage != null) {
-          profilePictureUrl = await _firebaseService.uploadProfilePicture(user.uid, _profileImage!);
+          profilePictureUrl = await _firebaseService.uploadProfilePicture(
+              user.uid, _profileImage!);
         }
 
         await _firebaseService.addUser(
@@ -99,8 +103,11 @@ class _SignupPageState extends State<SignupPage> {
               onTap: _pickImage,
               child: CircleAvatar(
                 radius: 40,
-                backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
-                child: _profileImage == null ? const Icon(Icons.add_a_photo) : null,
+                backgroundImage:
+                    _profileImage != null ? FileImage(_profileImage!) : null,
+                child: _profileImage == null
+                    ? const Icon(Icons.add_a_photo)
+                    : null,
               ),
             ),
             TextField(

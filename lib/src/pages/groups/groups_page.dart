@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/groups_service.dart';
-import '../../providers/auth_provider.dart';
+import '../../providers/groups_provider.dart';
+import '../../providers/account_provider.dart';
 
 class GroupsPage extends StatefulWidget {
-  final List<String> userGroups;
-
-  const GroupsPage({super.key, required this.userGroups});
+  const GroupsPage({super.key});
 
   @override
   _GroupsPageState createState() => _GroupsPageState();
@@ -24,10 +22,11 @@ class _GroupsPageState extends State<GroupsPage> {
   }
 
   Future<void> _loadGroups() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final userName = authProvider.userName;
+    final accountProvider = Provider.of<AccountProvider>(context, listen: false);
+    final groupsProvider = Provider.of<GroupsProvider>(context, listen: false);
+    final userName = accountProvider.userName;
     if (userName.isNotEmpty) {
-      final groups = await _groupService.getGroups(widget.userGroups);
+      final groups = await _groupService.getGroups(groupsProvider.userGroups);
       setState(() {
         _groups = groups;
       });
@@ -55,20 +54,21 @@ class _GroupsPageState extends State<GroupsPage> {
             TextButton(
               child: const Text('Create'),
               onPressed: () async {
-                final authProvider = Provider.of<AuthProvider>(context, listen: false);
-                if (groupNameController.text.isNotEmpty && authProvider.userName.isNotEmpty) {
+                final accountProvider =
+                    Provider.of<AccountProvider>(context, listen: false);
+                final groupsProvider =
+                    Provider.of<GroupsProvider>(context, listen: false);
+                if (groupNameController.text.isNotEmpty &&
+                    accountProvider.userName.isNotEmpty) {
                   await _groupService.addOrUpdateGroup(
                     groupNameController.text,
-                    authProvider.userName,
+                    accountProvider.userName,
                   );
-                  final prefs = await SharedPreferences.getInstance();
-                  final userGroups = prefs.getStringList('userGroups') ?? [];
-                  userGroups.add(groupNameController.text);
-                  await prefs.setStringList('userGroups', userGroups);
+                  groupsProvider.addGroup(groupNameController.text);
                   setState(() {
                     _groups.add({
                       'name': groupNameController.text,
-                      'users': [authProvider.userName],
+                      'users': [accountProvider.userName],
                     });
                   });
                   Navigator.of(context).pop();
@@ -105,15 +105,15 @@ class _GroupsPageState extends State<GroupsPage> {
             TextButton(
               child: const Text('Leave Group'),
               onPressed: () async {
-                final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                final accountProvider =
+                    Provider.of<AccountProvider>(context, listen: false);
+                final groupsProvider =
+                    Provider.of<GroupsProvider>(context, listen: false);
                 await _groupService.leaveGroup(
                   group['name'],
-                  authProvider.userName,
+                  accountProvider.userName,
                 );
-                final prefs = await SharedPreferences.getInstance();
-                final userGroups = prefs.getStringList('userGroups') ?? [];
-                userGroups.remove(group['name']);
-                await prefs.setStringList('userGroups', userGroups);
+                groupsProvider.removeGroup(group['name']);
                 setState(() {
                   _groups.removeWhere((g) => g['name'] == group['name']);
                 });

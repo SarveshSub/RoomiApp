@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'dart:io';
 
-import '../category_items_page.dart';
+import 'category_items_page.dart';
 
 class InventoryPage extends StatefulWidget {
   const InventoryPage({super.key});
@@ -69,7 +69,8 @@ class _InventoryPageState extends State<InventoryPage> {
   Future<void> _pickImage(int index) async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      _editCategory(index, categories[index]['name']!, imagePath: pickedFile.path);
+      _editCategory(index, categories[index]['name']!,
+          imagePath: pickedFile.path);
     }
   }
 
@@ -138,8 +139,9 @@ class _InventoryPageState extends State<InventoryPage> {
       return categories;
     } else {
       return categories
-          .where((category) =>
-              category['name']!.toLowerCase().contains(_searchController.text.toLowerCase()))
+          .where((category) => category['name']!
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase()))
           .toList();
     }
   }
@@ -147,138 +149,140 @@ class _InventoryPageState extends State<InventoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Colors.grey[100],
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search',
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                onChanged: (value) {
-                  setState(() {});
-                },
+                filled: true,
+                fillColor: Colors.white,
               ),
+              onChanged: (value) {
+                setState(() {});
+              },
             ),
-            Expanded(
-              child: _filteredCategories().isEmpty
-                  ? const Center(
-                      child: Text(
-                        'No categories added. Click + to add a category.',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    )
-                  : GridView.builder(
-                      padding: const EdgeInsets.all(10),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                      ),
-                      itemCount: _filteredCategories().length,
-                      itemBuilder: (context, index) {
-                        final category = _filteredCategories()[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CategoryItemsPage(category: category['name']!),
-                              ),
-                            );
-                          },
-                          onLongPress: () {
-                            _showAddCategoryDialog(index: index);
-                          },
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
+          ),
+          Expanded(
+            child: _filteredCategories().isEmpty
+                ? const Center(
+                    child: Text(
+                      'No categories added. Click + to add a category.',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  )
+                : GridView.builder(
+                    padding: const EdgeInsets.all(10),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                    ),
+                    itemCount: _filteredCategories().length,
+                    itemBuilder: (context, index) {
+                      final category = _filteredCategories()[index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CategoryItemsPage(
+                                  category: category['name']!),
                             ),
-                            elevation: 5,
-                            child: Stack(
-                              children: [
-                                Column(
-                                  children: [
-                                    Expanded(
-                                      flex: 3,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: const BorderRadius.vertical(
-                                            top: Radius.circular(15),
-                                          ),
-                                          color: category['imagePath']!.isEmpty
-                                              ? Colors.blueAccent
-                                              : null,
-                                          image: category['imagePath']!.isNotEmpty
-                                              ? DecorationImage(
-                                                  image: FileImage(File(category['imagePath']!)),
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : null,
+                          );
+                        },
+                        onLongPress: () {
+                          _showAddCategoryDialog(index: index);
+                        },
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          elevation: 5,
+                          child: Stack(
+                            children: [
+                              Column(
+                                children: [
+                                  Expanded(
+                                    flex: 3,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            const BorderRadius.vertical(
+                                          top: Radius.circular(15),
                                         ),
-                                        child: category['imagePath']!.isEmpty
-                                            ? const Center(
-                                                child: Icon(
-                                                  Icons.image,
-                                                  size: 50,
-                                                  color: Colors.white,
-                                                ),
+                                        color: category['imagePath']!.isEmpty
+                                            ? Colors.blueAccent
+                                            : null,
+                                        image: category['imagePath']!.isNotEmpty
+                                            ? DecorationImage(
+                                                image: FileImage(File(
+                                                    category['imagePath']!)),
+                                                fit: BoxFit.cover,
                                               )
                                             : null,
                                       ),
+                                      child: category['imagePath']!.isEmpty
+                                          ? const Center(
+                                              child: Icon(
+                                                Icons.image,
+                                                size: 50,
+                                                color: Colors.white,
+                                              ),
+                                            )
+                                          : null,
                                     ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Container(
-                                        decoration: const BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.vertical(
-                                            bottom: Radius.circular(15),
-                                          ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.vertical(
+                                          bottom: Radius.circular(15),
                                         ),
-                                        child: Center(
-                                          child: Text(
-                                            category['name']!,
-                                            style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
-                                            ),
-                                            textAlign: TextAlign.center,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          category['name']!,
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
                                           ),
+                                          textAlign: TextAlign.center,
                                         ),
                                       ),
                                     ),
-                                  ],
-                                ),
-                                Positioned(
-                                  top: 8,
-                                  right: 8,
-                                  child: IconButton(
-                                    icon: const Icon(Icons.edit, color: Colors.white),
-                                    onPressed: () {
-                                      _showAddCategoryDialog(index: index);
-                                    },
                                   ),
+                                ],
+                              ),
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: IconButton(
+                                  icon: const Icon(Icons.edit,
+                                      color: Colors.white),
+                                  onPressed: () {
+                                    _showAddCategoryDialog(index: index);
+                                  },
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        );
-                      },
-                    ),
-            ),
-          ],
-        ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingAddButton(
         onPressed: () => _showAddCategoryDialog(),

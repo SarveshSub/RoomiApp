@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'src/app.dart';
 import 'src/providers/settings_provider.dart';
 import 'src/services/settings_service.dart';
-import 'src/providers/auth_provider.dart';
+import 'src/providers/account_provider.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -19,7 +19,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AccountProvider()),
       ],
       child: MyApp(settingsController: settingsController),
     ),

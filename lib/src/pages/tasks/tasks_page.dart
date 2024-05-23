@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../widgets/floating_add_button.dart';
+import 'package:roomi/src/widgets/floating_add_button.dart';
 
 class TasksPage extends StatelessWidget {
   const TasksPage({super.key});
 
   void _showAddCategoryDialog(context) {
     const s = SnackBar(
-      content: Text('Add a task dialog'),
+      content: Text('Add a category dialog'),
     );
     ScaffoldMessenger.of(context).showSnackBar(s);
   }
