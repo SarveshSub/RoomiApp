@@ -6,6 +6,7 @@ import 'package:roomi/src/pages/settings/settings_page.dart';
 import 'package:roomi/src/providers/groups_provider.dart';
 import 'tasks/tasks_page.dart';
 import 'inventory/inventory_page.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -36,12 +37,10 @@ class HomePageState extends State<HomePage> {
     });
   }
 
-  void _navigateToGroups(List<String> userGroups) {
+  void _navigateToGroups() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const GroupsPage(),
-      ),
+      MaterialPageRoute(builder: (context) => const GroupsPage()),
     );
   }
 
@@ -66,7 +65,7 @@ class HomePageState extends State<HomePage> {
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.group),
-          onPressed: () => _navigateToGroups,
+          onPressed: _navigateToGroups,
         ),
         actions: [
           IconButton(

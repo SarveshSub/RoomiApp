@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:roomi/src/providers/groups_provider.dart';
 import 'src/app.dart';
 import 'src/providers/settings_provider.dart';
 import 'src/services/settings_service.dart';
@@ -20,6 +21,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AccountProvider()),
+        ChangeNotifierProvider(create: (_) => GroupsProvider()),
       ],
       child: MyApp(settingsController: settingsController),
     ),

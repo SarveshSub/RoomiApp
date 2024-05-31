@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:roomi/src/widgets/floating_add_button.dart';
 import '../../services/groups_service.dart';
 import '../../providers/groups_provider.dart';
 import '../../providers/account_provider.dart';
@@ -132,8 +133,15 @@ class _GroupsPageState extends State<GroupsPage> {
     );
   }
 
+  void _setDefaultGroup(String groupName) {
+    final groupsProvider = Provider.of<GroupsProvider>(context, listen: false);
+    groupsProvider.setDefaultGroup(groupName);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final groupsProvider = Provider.of<GroupsProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Groups'),
@@ -141,18 +149,23 @@ class _GroupsPageState extends State<GroupsPage> {
       body: ListView.builder(
         itemCount: _groups.length,
         itemBuilder: (context, index) {
+          final group = _groups[index];
+          final isDefault = group['name'] == groupsProvider.defaultGroup;
           return ListTile(
-            title: Text(_groups[index]['name']),
-            subtitle: Text('Members: ${_groups[index]['users'].length}'),
+            title: Text(group['name']),
+            subtitle: Text('Members: ${group['users'].length}'),
+            tileColor: isDefault ? Colors.blue.withOpacity(0.1) : null,
             onTap: () {
-              _showGroupDetailsDialog(_groups[index]);
+              _showGroupDetailsDialog(group);
+            },
+            onLongPress: () {
+              _setDefaultGroup(group['name']);
             },
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingAddButton(
         onPressed: _showAddGroupDialog,
-        child: const Icon(Icons.add),
       ),
     );
   }
